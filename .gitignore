@@ -1,0 +1,22 @@
+# Ignore everything
+*
+
+# EXCEPT 
+
+# .github folder to keep the README in
+!/.github/
+
+# The .gitignore file itself
+!/.gitignore
+
+# Git-related configuration
+!/.gitconfig
+!/.gitmodules
+
+# Zsh & Shell configuration
+!/.zshrc
+!/.p10k.zsh
+
+# Config directories (like nvim, etc.)
+# The trailing slash is important! It ensures we can track files inside.
+!/.config/
