@@ -1,3 +1,6 @@
 [submodule ".config/nvim-kickstart"]
 	path = .config/nvim-kickstart
 	url = git@github.com:ryanenash/kickstart-modular.nvim.git
+[submodule ".config/nvim-lazy"]
+	path = .config/nvim-lazy
+	url = git@github.com:ryanenash/LazyVim-Starter.git
