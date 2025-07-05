@@ -1,7 +1,3 @@
-Of course. Here is an expanded and correctly formatted version of your guide. I've added more detail to the workflow, clarified some technical points, and included a crucial section on how to set up this system on a new machine.
-
------
-
 ## Managing Dotfiles with a Bare Git Repository
 
 This method allows you to version control your configuration files (dotfiles) directly in your `$HOME` directory. It's a powerful alternative to using symlinks, as it keeps your home directory clean while providing full Git functionality.
@@ -138,7 +134,7 @@ Here’s how to deploy your dotfiles on a new computer.
     alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
     ```
 
-3.  **Checkout your files.** This command will place all the tracked files into your `$HOME` directory.
+3.  **Checkout your files.** This command will place all the tracked files into your `$HOME` directory (make sure there is at least one file in $HOME beforehand)
 
     ```bash
     dotfiles checkout
