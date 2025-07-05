@@ -1,6 +1,6 @@
 ## Managing Dotfiles with a Bare Git Repository
 
-This method allows you to version control your configuration files (dotfiles) directly in your `$HOME` directory. It's a powerful alternative to using symlinks, as it keeps your home directory clean while providing full Git functionality.
+This method allows you to version control your configuration files (dotfiles) directly in your `$HOME` directory. An alternative to using symlinks while providing full Git functionality.
 
 ### ⚙️ Initial Setup
 
