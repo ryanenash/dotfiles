@@ -5,6 +5,7 @@
 
 # .github folder to keep the README in
 !/.github/
+!/.github/README.md
 
 # The .gitignore file itself
 !/.gitignore
