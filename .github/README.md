@@ -24,8 +24,10 @@ These one-time commands set up the dotfiles repository on your main machine.
 
     ```bash
     dotfiles config --local status.showUntrackedFiles no
-    ```
+4.  **Set the remote**. Create a new repo on Github with no README/License etc. then set the remote to this new repo 
 
+    ```bash
+    dotfiles remote add origin git@github.com:ryanenash/dotfiles.git
 -----
 
 ### 🚀 Daily Workflow
