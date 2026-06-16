@@ -24,10 +24,14 @@ These one-time commands set up the dotfiles repository on your main machine.
 
     ```bash
     dotfiles config --local status.showUntrackedFiles no
-4.  **Set the remote**. Create a new repo on Github with no README/License etc. then set the remote to this new repo 
+    ```
+
+4.  **Set the remote**. Create a new repo on GitHub with no README/License etc. then set the remote to this new repo.
 
     ```bash
     dotfiles remote add origin git@github.com:ryanenash/dotfiles.git
+    ```
+
 -----
 
 ### 🚀 Daily Workflow
@@ -93,6 +97,15 @@ This is the correct way to include a folder that is its own Git repository, such
     dotfiles commit -m "chore: Update nvim configuration"
     ```
 
+    > **Note:** each submodule is on its own branch — `nvim-lazy` tracks `work`, `nvim-kickstart` tracks `master`. Always commit/push from inside the submodule on its branch *before* bumping the pointer in the parent repo.
+
+4.  **Submodules do NOT auto-update.** `dotfiles pull` only updates the *recorded pointer* — it does not change the submodule's checked-out files. Worse, a plain `dotfiles submodule update` checks the submodule out in **detached HEAD** at the recorded commit, dropping you off its branch (`work`/`master`). To pull a submodule's latest commits on another machine *and stay on its branch*, pull from inside it directly:
+
+    ```bash
+    cd ~/.config/nvim-lazy
+    git pull origin work        # nvim-kickstart uses 'master'
+    ```
+
 -----
 
 ### 💡 The `.gitignore` Strategy
@@ -116,7 +129,20 @@ This file must be located at `~/.gitignore`.
 # The trailing slash is important for directories
 !/.config/
 !/.github/
+
+# Claude Code: track settings only, never history/sessions/local overrides
+!/.claude/
+!/.claude/settings.json
 ```
+
+> **⚠️ Whitelisting is not recursive.** Un-ignoring a directory (e.g. `!/.config/`) only lets Git *descend* into it — the `*` rule still ignores everything *inside*. To track a file in a new subfolder you must whitelist the path explicitly, e.g.:
+>
+> ```gitignore
+> !/.config/ghostty/
+> !/.config/ghostty/config
+> ```
+>
+> Files that are *already tracked* keep working regardless (Git only applies ignore rules to *untracked* files). So if `dotfiles add` complains a path "is ignored", either add the `!` lines above or use `dotfiles add -f <path>`.
 
 -----
 
@@ -154,6 +180,45 @@ Here’s how to deploy your dotfiles on a new computer.
 
     ```bash
     dotfiles submodule update --init --recursive
+    ```
+
+-----
+
+### 🔄 Syncing an Already-Set-Up Machine
+
+Pulling changes onto a machine that *already* has the dotfiles checked out (e.g. picking up on the work Mac what you pushed from home).
+
+1.  **Deal with local changes first.** `dotfiles pull` will refuse to overwrite uncommitted edits to tracked files. Check what's dirty:
+
+    ```bash
+    dotfiles status -s
+    ```
+
+    Then either **commit** them (preferred, so they're backed up):
+
+    ```bash
+    dotfiles add <files> && dotfiles commit -m "WIP from work mac"
+    ```
+
+    …or **stash** them if you just want them out of the way temporarily:
+
+    ```bash
+    dotfiles stash
+    ```
+
+2.  **Pull the parent repo.**
+
+    ```bash
+    dotfiles pull
+    ```
+
+    If you committed and the same file changed on both ends, Git will report a **merge conflict**. Open the conflicted file, resolve the `<<<<<<<`/`=======`/`>>>>>>>` markers, then `dotfiles add <file>` and `dotfiles commit`. (If you stashed in step 1, run `dotfiles stash pop` now and resolve any conflict the same way.)
+
+3.  **Update the submodules** — remember they don't move on their own (see the Submodule note above). Pull each on its branch:
+
+    ```bash
+    cd ~/.config/nvim-lazy && git pull origin work
+    cd ~/.config/nvim-kickstart && git pull origin master
     ```
 
 -----

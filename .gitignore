@@ -21,3 +21,8 @@
 # Config directories (like nvim, etc.)
 # The trailing slash is important! It ensures we can track files inside.
 !/.config/
+
+# Claude Code config — settings only.
+# NOT history/projects/sessions/cache (machine-local, large) or settings.local.json (per-machine overrides).
+!/.claude/
+!/.claude/settings.json
