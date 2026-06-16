@@ -59,7 +59,7 @@ zstyle ':z4h:*' fzf-flags --color=hl:5,hl+:5,bg:-1,bg+:-1,border:7,info:3,prompt
 z4h init || return
 
 # Extend PATH.
-path=(~/bin $path)
+path=(~/.local/bin ~/bin $path)
 
 # Export environment variables.
 export GPG_TTY=$TTY
@@ -120,9 +120,8 @@ alias nvim-kickstart='NVIM_APPNAME="nvim-kickstart" nvim'
 
 # Add flags to existing aliases.
 alias ls="${aliases[ls]:-ls} -A"
-alias notes="~/Library/Mobile Documents/iCloud~md~obsidian/Documents/notes.md"
+alias notes="~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/notes.md"
 alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
-
 # Set shell options: http://zsh.sourceforge.net/Doc/Release/Options.html.
 setopt glob_dots     # no special treatment for file names with a leading dot
 setopt no_auto_menu  # require an extra TAB press to open the completion menu

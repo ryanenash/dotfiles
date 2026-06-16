@@ -46,3 +46,12 @@ font-feature = +calt, +liga, +dlig
 # # which is explained in the docs for that config option.
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
+keybind = shift+enter=text:\x1b\r
+# macos-custom-icon = ~/.config/ghostty/purple.png
+# macos-icon = custom
+# auto-update-channel = tip
+# Liquid Glass (macOS): translucent glass background.
+# Use macos-glass-clear for a more transparent look.
+background-blur = macos-glass-regular
+background-opacity = 0.94
+# macos-titlebar-style = tabs
