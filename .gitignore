@@ -21,6 +21,6 @@
 # only lets Git descend into it — each tracked file/subfolder needs its own !line.
 !/.config/
 
-# Ghostty
+# Ghostty (track everything under it, not just one file)
 !/.config/ghostty/
-!/.config/ghostty/config
+!/.config/ghostty/**
