@@ -12,12 +12,15 @@
 
 # Git-related configuration
 !/.gitconfig
-!/.gitmodules
 
 # Zsh & Shell configuration
 !/.zshrc
 !/.p10k.zsh
 
-# Config directories (like nvim, etc.)
-# The trailing slash is important! It ensures we can track files inside.
+# Config directories. Whitelisting is NOT recursive: un-ignoring a directory
+# only lets Git descend into it — each tracked file/subfolder needs its own !line.
 !/.config/
+
+# Ghostty
+!/.config/ghostty/
+!/.config/ghostty/config
