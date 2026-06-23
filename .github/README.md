@@ -60,51 +60,27 @@ This is for individual files like `.zshrc` or `.gitconfig`.
 
 -----
 
-#### Tracking External Repositories (Submodules)
+#### External Config Repos (nvim) — standalone repos, **not** submodules
 
-This is the correct way to include a folder that is its own Git repository, such as your forked Neovim configuration. This keeps its commit history separate but linked to your main dotfiles repo.
+Some configs are their own Git repository — your Neovim setups. These are **not** tracked by dotfiles. They are independent repos with their own remotes, history, and branches, cloned separately on each machine.
 
-1.  **Add the repository as a submodule.** This command will clone the repository to the specified path and create a `.gitmodules` file.
+> **Why not submodules?** Dotfiles used to embed them as git submodules, but for an actively-edited, per-machine config that added friction for little gain: every change needed a two-step commit (submodule, then a pointer bump in dotfiles), `dotfiles submodule update` checks out in **detached HEAD**, and `main`/`work` recorded divergent pointers that conflicted on merge. The nvim repos are already versioned and backed up by their own remotes, so they stand alone.
 
-    ```bash
-    dotfiles submodule add git@github.com:ryanenash/kickstart-modular.nvim.git .config/nvim-kickstart
-    ```
+The repos:
 
-2.  **Commit the submodule link.** This saves the reference in your main dotfiles repo.
+| Repo | Cloned to | Invoked via |
+| ---- | --------- | ----------- |
+| `ryanenash/LazyVim-Starter` | `~/.config/nvim` (work) or `~/.config/nvim-lazy` (personal) | default `nvim` / `NVIM_APPNAME="nvim-lazy"` |
+| `ryanenash/kickstart-modular.nvim` | `~/.config/nvim-kickstart` | `NVIM_APPNAME="nvim-kickstart"` |
 
-    ```bash
-    dotfiles add .gitmodules .config/nvim-kickstart
-    dotfiles commit -m "feat: Add nvim configuration as a submodule"
-    ```
+Each nvim repo uses its **own** `main` (personal) / `work` (work-machine) branch convention — independent of the dotfiles branches that happen to share those names. Work on them directly; there is no pointer to bump in dotfiles afterwards:
 
-3.  **Updating the Submodule.** When you make changes inside the `~/.config/nvim-kickstart/` folder, you commit them to the submodule's repository first. Then, you create a *new commit* in your main dotfiles repo to update its pointer to the submodule's new state.
-
-    ```bash
-    # 1. Go into the submodule's directory
-    cd ~/.config/nvim-kickstart
-
-    # 2. Make your changes, then commit them as usual
-    git commit -am "Update nvim plugin"
-
-    # 3. Go back to your home directory
-    cd ~
-
-    # 4. Your dotfiles repo now sees that the submodule has new commits.
-    #    Add the updated submodule link to the staging area.
-    dotfiles add .config/nvim-kickstart
-
-    # 5. Commit the updated pointer.
-    dotfiles commit -m "chore: Update nvim configuration"
-    ```
-
-    > **Note:** each submodule is on its own branch — `nvim-lazy` tracks `work`, `nvim-kickstart` tracks `master`. Always commit/push from inside the submodule on its branch *before* bumping the pointer in the parent repo.
-
-4.  **Submodules do NOT auto-update.** `dotfiles pull` only updates the *recorded pointer* — it does not change the submodule's checked-out files. Worse, a plain `dotfiles submodule update` checks the submodule out in **detached HEAD** at the recorded commit, dropping you off its branch (`work`/`master`). To pull a submodule's latest commits on another machine *and stay on its branch*, pull from inside it directly:
-
-    ```bash
-    cd ~/.config/nvim-lazy
-    git pull origin work        # nvim-kickstart uses 'master'
-    ```
+```bash
+cd ~/.config/nvim
+git checkout work            # or main, per machine
+git commit -am "Update plugin"
+git push                     # the nvim repo is its own source of truth
+```
 
 -----
 
@@ -123,17 +99,20 @@ This file must be located at `~/.gitignore`.
 # 2. But DO NOT ignore the files and folders listed below
 !/.gitignore
 !/.gitconfig
-!/.gitmodules
 !/.zshrc
+!/.p10k.zsh
 
-# The trailing slash is important for directories
-!/.config/
+# The trailing slash lets Git descend into the directory
 !/.github/
+!/.github/README.md
 
-# Claude Code: track settings only, never history/sessions/local overrides
-!/.claude/
-!/.claude/settings.json
+# Whitelisting is NOT recursive — each tracked path needs its own ! line (see note)
+!/.config/
+!/.config/ghostty/
+!/.config/ghostty/**
 ```
+
+> **Note on Claude Code:** `~/.claude/` is intentionally **not** whitelisted — settings vary too much between machines, so each keeps its own untracked `~/.claude/settings.json`.
 
 > **⚠️ Whitelisting is not recursive.** Un-ignoring a directory (e.g. `!/.config/`) only lets Git *descend* into it — the `*` rule still ignores everything *inside*. To track a file in a new subfolder you must whitelist the path explicitly, e.g.:
 >
@@ -176,10 +155,16 @@ Here’s how to deploy your dotfiles on a new computer.
     dotfiles config --local status.showUntrackedFiles no
     ```
 
-5.  **Initialize your submodules.** This command reads your `.gitmodules` file and clones all your submodules (like your Neovim config) into the correct locations.
+5.  **Clone your nvim configs** — they're separate repos (see *External Config Repos* above), not part of dotfiles, so clone them explicitly:
 
     ```bash
-    dotfiles submodule update --init --recursive
+    # LazyVim config — default path on work, or use NVIM_APPNAME on personal
+    git clone git@github.com-personal:ryanenash/LazyVim-Starter.git ~/.config/nvim
+    # Kickstart config (optional second setup)
+    git clone git@github.com-personal:ryanenash/kickstart-modular.nvim.git ~/.config/nvim-kickstart
+
+    # Check out the branch this machine should track (main = personal, work = work)
+    git -C ~/.config/nvim checkout work
     ```
 
 -----
@@ -214,19 +199,19 @@ Pulling changes onto a machine that *already* has the dotfiles checked out (e.g.
 
     If you committed and the same file changed on both ends, Git will report a **merge conflict**. Open the conflicted file, resolve the `<<<<<<<`/`=======`/`>>>>>>>` markers, then `dotfiles add <file>` and `dotfiles commit`. (If you stashed in step 1, run `dotfiles stash pop` now and resolve any conflict the same way.)
 
-    > **Newly-tracked files:** if a commit starts tracking a file that *already exists* untracked on this machine (e.g. the first time `~/.claude/settings.json` arrives), the pull aborts with *"untracked working tree files would be overwritten."* Move the local copy aside, pull, then merge any machine-specific tweaks back in:
+    > **Newly-tracked files:** if a commit starts tracking a file that *already exists* untracked on this machine, the pull aborts with *"untracked working tree files would be overwritten."* Move the local copy aside, pull, then merge any machine-specific tweaks back in:
     >
     > ```bash
-    > mv ~/.claude/settings.json ~/.claude/settings.json.bak
+    > mv ~/.config/foo/bar ~/.config/foo/bar.bak
     > dotfiles pull
     > # reconcile anything from .bak into the now-synced file, then delete the .bak
     > ```
 
-3.  **Update the submodules** — remember they don't move on their own (see the Submodule note above). Pull each on its branch:
+3.  **Update your nvim configs** — they're separate repos (see *External Config Repos* above), so pull each directly on its branch:
 
     ```bash
-    cd ~/.config/nvim-lazy && git pull origin work
-    cd ~/.config/nvim-kickstart && git pull origin master
+    cd ~/.config/nvim && git pull
+    cd ~/.config/nvim-kickstart && git pull
     ```
 
 -----
