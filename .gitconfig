@@ -1,3 +1,13 @@
 [user]
+	email = ryan.nash@accenture.com
 	name = Ryan Nash
-	email = ryan.nash.personal@gmail.com
+[core]
+        editor = /opt/homebrew/bin/nvim
+[push]
+	autoSetupRemote = true
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential

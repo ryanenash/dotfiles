@@ -3,7 +3,7 @@
 # This template file has been automatically created at the following
 # path since Ghostty couldn't find any existing config files on your system:
 #
-#   /Users/rnash/Library/Application Support/com.mitchellh.ghostty/config
+#   /Users/ryan.nash/Library/Application Support/com.mitchellh.ghostty/config
 #
 # The template does not set any default options, since Ghostty ships
 # with sensible defaults for all options. Users should only need to set
@@ -20,12 +20,19 @@
 # # The config file consists of simple key-value pairs,
 # # separated by equals signs.
 font-family = TX-02
-theme = tokyonight
+font-feature = +calt, +liga, +dlig
+# theme = tokyonight
+# theme = Monokai Pro Spectrum
+# theme = Citruszest
+# theme = Carbonfox
+theme = Catppuccin Mocha
+background = #181818
 window-padding-balance = true
 window-padding-y = 0
-# font-size = 14
-font-feature = +calt, +liga, +dlig
 # window-padding-x = 2
+# Liquid Glass (macOS): translucent glass background.
+background-blur = macos-glass-regular
+background-opacity = 0.94
 #
 # # Spacing around the equals sign does not matter.
 # # All of these are identical:
@@ -46,12 +53,5 @@ font-feature = +calt, +liga, +dlig
 # # which is explained in the docs for that config option.
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
-keybind = shift+enter=text:\x1b\r
-# macos-custom-icon = ~/.config/ghostty/purple.png
-# macos-icon = custom
-# auto-update-channel = tip
-# Liquid Glass (macOS): translucent glass background.
-# Use macos-glass-clear for a more transparent look.
-background-blur = macos-glass-regular
-background-opacity = 0.94
-# macos-titlebar-style = tabs
+keybind = shift+enter=text:\n
+keybind = cmd+c=copy_to_clipboard:plain
