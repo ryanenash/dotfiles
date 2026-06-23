@@ -214,6 +214,14 @@ Pulling changes onto a machine that *already* has the dotfiles checked out (e.g.
 
     If you committed and the same file changed on both ends, Git will report a **merge conflict**. Open the conflicted file, resolve the `<<<<<<<`/`=======`/`>>>>>>>` markers, then `dotfiles add <file>` and `dotfiles commit`. (If you stashed in step 1, run `dotfiles stash pop` now and resolve any conflict the same way.)
 
+    > **Newly-tracked files:** if a commit starts tracking a file that *already exists* untracked on this machine (e.g. the first time `~/.claude/settings.json` arrives), the pull aborts with *"untracked working tree files would be overwritten."* Move the local copy aside, pull, then merge any machine-specific tweaks back in:
+    >
+    > ```bash
+    > mv ~/.claude/settings.json ~/.claude/settings.json.bak
+    > dotfiles pull
+    > # reconcile anything from .bak into the now-synced file, then delete the .bak
+    > ```
+
 3.  **Update the submodules** — remember they don't move on their own (see the Submodule note above). Pull each on its branch:
 
     ```bash
