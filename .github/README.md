@@ -207,12 +207,17 @@ Pulling changes onto a machine that *already* has the dotfiles checked out (e.g.
     > # reconcile anything from .bak into the now-synced file, then delete the .bak
     > ```
 
-3.  **Update your nvim configs** — they're separate repos (see *External Config Repos* above), so pull each directly on its branch:
+3.  **Update your nvim configs** — separate repos (see *External Config Repos* above), but the **same two-branch model as dotfiles** (`main` = personal, `work` = work machine). On the **work** machine (each repo on its `work` branch):
 
     ```bash
-    cd ~/.config/nvim && git pull
-    cd ~/.config/nvim-kickstart && git pull
+    cd ~/.config/nvim
+    git fetch && git merge origin/main             # pull personal's nvim baseline into work
+    git add -A && git commit -m "…" && git push    # save + publish work's nvim changes
     ```
+
+    On the **personal** machine (on `main`): `git pull`, then `git add`/`commit`/`push`. *(`nvim-kickstart` is personal-only and follows the same pattern.)*
+
+    > Plain `git pull` only syncs your **current** branch (`origin/work`) — use `git merge origin/main` to bring the other side's baseline across, exactly like `dotfiles merge origin/main`.
 
 -----
 
