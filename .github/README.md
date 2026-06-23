@@ -216,6 +216,37 @@ Pulling changes onto a machine that *already* has the dotfiles checked out (e.g.
 
 -----
 
+### 🌿 Two-Branch Model: `main` (personal) + `work` (work machine)
+
+This repo uses two long-lived branches:
+
+  * **`main`** — the shared/personal baseline. The **personal** machine lives on it.
+  * **`work`** — `main` *plus* this work machine's specifics (PATHs, work aliases, prompt tweaks, etc.). The **work** machine lives on it.
+
+Each machine stays checked out on its own branch and **never** checks out the other — a `dotfiles checkout <other>` would overwrite your `$HOME` files.
+
+**Personal machine (on `main`):**
+
+```bash
+dotfiles pull                                              # get the latest baseline
+dotfiles add <files> && dotfiles commit -m "…" && dotfiles push
+```
+
+**Work machine (on `work`):**
+
+```bash
+dotfiles fetch && dotfiles merge origin/main              # pull baseline updates into work
+dotfiles add <files> && dotfiles commit -m "…" && dotfiles push
+```
+
+**Rules of thumb:**
+
+  * **Shared/baseline** changes (README, `.gitignore`, a new tracked config) → make them on the **personal** machine (`main`) so they flow to `work` via `merge origin/main`. *(Editing `main` from the work machine means writing to a non-checked-out branch — awkward; prefer doing it on personal.)*
+  * **Machine-specific** changes → make them on **`work`**.
+  * `merge origin/main` only **conflicts** on files that changed on *both* sides (`.zshrc`, `.p10k.zsh`, `.gitconfig`, `.config/ghostty/config`). Resolve by keeping your work-specific lines and folding in the baseline change, then `dotfiles add <file> && dotfiles commit`.
+
+-----
+
 ### ⚠️ Caveats
 
   * As mentioned, this method requires a carefully managed `.gitignore` in `$HOME` that uses negated patterns (`!`) to select what to track.
